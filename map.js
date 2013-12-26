@@ -1,7 +1,5 @@
 "use strict";
 
-var map = map || {};
-
 var tiletype =
 {
 	void:	0,
@@ -11,45 +9,41 @@ var tiletype =
 	pillar:	4
 };
 
-map.new = function( width, height )
+Map = function( width, height )
 {
-	var m = {};
-	
-	m.width = width;
-	m.height = height;
+	this.width = width;
+	this.height = height;
 
-	m.tile = new Array( width );
+	this.tile = new Array( width );
 	for( var i = 0; i < width; i++ )
 	{
-		m.tile[i] = new Array( height );
+		this.tile[i] = new Array( height );
 		for( var j = 0; j < height; j++ )
 		{
-			m.tile[i][j] = tiletype.void;
+			this.tile[i][j] = tiletype.void;
 		}
 	}
-
-	return m;
 };
 
-map.isLegal = function( m, x, y )
+Map.prototype.isLegal = function( x, y )
 {
 	return(
 		( x >= 0 ) &&
 		( y >= 0 ) &&
-		( x < m.width ) &&
-		( y < m.height )
+		( x < this.width ) &&
+		( y < this.height )
 	);
 };
 
-map.isFree = function( m, x, y, w, h )
+Map.prototype.isFree = function( x, y, w, h )
 {
 	for( var i = x-1; i <= x+w+1; i++ )
 	{
 		for( var j = y-1; j <= y+h+1; j++ )
 		{
-			if( map.isLegal( m, i, j ) )
+			if( this.isLegal( i, j ) )
 			{
-				if( m.tile[i][j] != tiletype.void )
+				if( this.tile[i][j] != tiletype.void )
 				{
 					return false;
 				}
@@ -64,29 +58,36 @@ map.isFree = function( m, x, y, w, h )
 	return true;
 };
 
-map.makeRoom = function( m, x, y, w, h )
+Map.prototype.isPassable = function( x, y )
+{
+	return(
+		this.isLegal( x, y ) &&
+		( this.tile[x][y] == tiletype.floor ) );
+};
+
+Map.prototype.makeRoom = function( x, y, w, h )
 {
 	for( var i = x-1; i <= x+w+1; i++ )
 	{
 		for( var j = y-1; j <= y+h+1; j++ )
 		{
-			if( map.isLegal( m, i, j ) )
+			if( this.isLegal( i, j ) )
 			{
 				if( ( i == x-1 ) || ( j == y-1 ) ||
 					( i == x+w+1 ) || ( j == y+h+1 ) )
 				{
-					m.tile[i][j] = tiletype.wall;
+					this.tile[i][j] = tiletype.wall;
 				}
 				else
 				{
-					m.tile[i][j] = tiletype.floor;
+					this.tile[i][j] = tiletype.floor;
 				}
 			}
 		}
 	}
 };
 
-map.makeLink = function( m, x1, y1, x2, y2 )
+Map.prototype.makeLink = function( x1, y1, x2, y2 )
 {
 	var cx = x1, cy = y1;
 	var sx = 0, sy = 0;
@@ -103,9 +104,9 @@ map.makeLink = function( m, x1, y1, x2, y2 )
 
 	while( cx != x2 )
 	{
-		if( map.isLegal( m, cx, cy ) )
+		if( this.isLegal( cx, cy ) )
 		{
-			m.tile[cx][cy] = tiletype.floor;
+			this.tile[cx][cy] = tiletype.floor;
 		}
 		else
 		{
@@ -117,9 +118,9 @@ map.makeLink = function( m, x1, y1, x2, y2 )
 
 	while( cy != y2 )
 	{
-		if( map.isLegal( m, cx, cy ) )
+		if( this.isLegal( cx, cy ) )
 		{
-			m.tile[cx][cy] = tiletype.floor;
+			this.tile[cx][cy] = tiletype.floor;
 		}
 		else
 		{
@@ -130,7 +131,7 @@ map.makeLink = function( m, x1, y1, x2, y2 )
 	}
 };
 
-map.countDoors = function( m, x, y, w, h )
+Map.prototype.countDoors = function( x, y, w, h )
 {
 	var n = 0;
 	
@@ -138,12 +139,12 @@ map.countDoors = function( m, x, y, w, h )
 	{
 		for( var j = y-1; j <= y+h+1; j++ )
 		{
-			if( map.isLegal( m, i, j ) )
+			if( this.isLegal( i, j ) )
 			{
 				if( ( i == x-1 ) || ( j == y-1 ) ||
 					( i == x+w+1 ) || ( j == y+h+1 ) )
 				{
-					if( m.tile[i][j] == tiletype.floor )
+					if( this.tile[i][j] == tiletype.floor )
 						n++;
 				}
 			}
@@ -153,20 +154,20 @@ map.countDoors = function( m, x, y, w, h )
 	return n;
 };
 
-map.placeDoors = function( m, x, y, w, h )
+Map.prototype.placeDoors = function( x, y, w, h )
 {
 	for( var i = x-1; i <= x+w+1; i++ )
 	{
 		for( var j = y-1; j <= y+h+1; j++ )
 		{
-			if( map.isLegal( m, i, j ) )
+			if( this.isLegal( i, j ) )
 			{
 				if( ( i == x-1 ) || ( j == y-1 ) ||
 					( i == x+w+1 ) || ( j == y+h+1 ) )
 				{
-					if( m.tile[i][j] == tiletype.floor )
+					if( this.tile[i][j] == tiletype.floor )
 					{
-						m.tile[i][j] = tiletype.door;
+						this.tile[i][j] = tiletype.door;
 					}
 				}
 			}
@@ -174,7 +175,7 @@ map.placeDoors = function( m, x, y, w, h )
 	}
 };
 
-map.generate = function( m, nrooms )
+Map.prototype.generate = function( nrooms )
 {
 	var rx = 0, ry = 0, rw = 0, rh = 0;
 	var cx = 0, cy = 0;
@@ -192,8 +193,8 @@ map.generate = function( m, nrooms )
 			if( tries > 1000 )
 				break;
 
-			rx = rand( 1, m.width-1 );
-			ry = rand( 1, m.height-1 );
+			rx = rand( 1, this.width-1 );
+			ry = rand( 1, this.height-1 );
 			rw = rand( 3, 6 );
 			rh = rand( 3, 6 );
 
@@ -206,20 +207,20 @@ map.generate = function( m, nrooms )
 				d = distance( rx, ry, rooms[i-1].x, rooms[i-1].y );
 			}
 		}
-		while(	( !map.isLegal( m, rx+rw+1, ry+rh+1 ) ) ||
-				( !map.isFree( m, rx, ry, rw, rh ) ) ||
+		while(	( !this.isLegal( rx+rw+1, ry+rh+1 ) ) ||
+				( !this.isFree( rx, ry, rw, rh ) ) ||
 				( d > 20 ) );
 
 		if( tries > 1000 )
 			break;
 		
-		map.makeRoom( m, rx, ry, rw, rh );
+		this.makeRoom( rx, ry, rw, rh );
 
 		actualRooms++;
 
 		if( i > 0 )
 		{
-			map.makeLink( m, cx, cy, rx + Math.floor( rw/2 ),
+			this.makeLink( cx, cy, rx + Math.floor( rw/2 ),
 				ry + Math.floor( rh/2 ) );
 		}
 
@@ -235,14 +236,14 @@ map.generate = function( m, nrooms )
 
 	for( var i = 0; i < actualRooms; i++ )
 	{
-		if( map.countDoors( m, rooms[i].x, rooms[i].y, rooms[i].w, rooms[i].h ) < 3 )
+		if( this.countDoors( rooms[i].x, rooms[i].y, rooms[i].w, rooms[i].h ) < 3 )
 		{
-			map.placeDoors( m, rooms[i].x, rooms[i].y, rooms[i].w, rooms[i].h );
+			this.placeDoors( rooms[i].x, rooms[i].y, rooms[i].w, rooms[i].h );
 		}
 	}
 };
 
-map.countNeighbours = function( m, x, y, w )
+Map.prototype.countNeighbours = function( x, y, w )
 {
 	var n = 0;
 
@@ -250,7 +251,7 @@ map.countNeighbours = function( m, x, y, w )
 	{
 		for( var j = y-1; j <= y+1; j++ )
 		{
-			if( map.isLegal( m, i, j ) && ( m.tile[i][j] == w ) )
+			if( this.isLegal( i, j ) && ( this.tile[i][j] == w ) )
 			{
 				n++;
 			}
@@ -260,46 +261,34 @@ map.countNeighbours = function( m, x, y, w )
 	return n;
 };
 
-map.postProcess = function( m )
+Map.prototype.postProcess = function()
 {
-	for( var i = 0; i < m.width; i++ )
+	for( var i = 0; i < this.width; i++ )
 	{
-		for( var j = 0; j < m.height; j++ )
+		for( var j = 0; j < this.height; j++ )
 		{
-			if( ( m.tile[i][j] == tiletype.void ) &&
-				( map.countNeighbours( m, i, j, tiletype.floor ) > 0 ) )
+			if( ( this.tile[i][j] == tiletype.void ) &&
+				( this.countNeighbours( i, j, tiletype.floor ) > 0 ) )
 			{
-				m.tile[i][j] = tiletype.wall;
-			}
-		}
-	}
-	
-	for( var i = 0; i < m.width; i++ )
-	{
-		for( var j = 0; j < m.height; j++ )
-		{
-			if( ( map.countNeighbours( m, i, j, tiletype.floor ) == 9 ) &&
-				( rand( 0, 100 ) < 5 ) )
-			{
-				m.tile[i][j] = tiletype.pillar;
+				this.tile[i][j] = tiletype.wall;
 			}
 		}
 	}
 };
 
-map.getDensity = function( m )
+Map.prototype.getDensity = function()
 {
 	var n = 0;
 
-	for( var i = 0; i < m.width; i++ )
+	for( var i = 0; i < this.width; i++ )
 	{
-		for( var j = 0; j < m.height; j++ )
+		for( var j = 0; j < this.height; j++ )
 		{
-			if( m.tile[i][j] == tiletype.floor )
+			if( this.tile[i][j] == tiletype.floor )
 				n++;
 		}
 	}
 
-	return( n / ( m.width * m.height ) );
+	return( n / ( this.width * this.height ) );
 };
 

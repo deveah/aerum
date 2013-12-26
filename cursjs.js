@@ -4,7 +4,7 @@ var cursjs = cursjs || {};
 
 cursjs.getMaxFontHeight = function( rows )
 {
-	var sizes = [ 8, 12, 18, 24, 36, 48, 72, 144 ];
+	var sizes = [ 8, 12, 15, 20, 24, 36, 48, 72, 144 ];
 
 	for( var i = sizes.length-1; i >= 0; i-- )
 	{

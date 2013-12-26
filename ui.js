@@ -2,8 +2,10 @@
 
 var ui = ui || {};
 
-ui.drawMap = function( m )
+ui.drawMainScreen = function()
 {
+	var m = game.player.map;
+
 	for( var i = 0; i < m.width; i++ )
 	{
 		for( var j = 0; j < m.height; j++ )
@@ -21,8 +23,14 @@ ui.drawMap = function( m )
 			if( m.tile[i][j] == tiletype.pillar )
 				c = "%";
 
-			cursjs.write( mainSurface, 0, i, j, c );
+			cursjs.write( mainSurface, 1, i, j, c );
 		}
+	}
+
+	for( var i = 0; i < game.entityList.length; i++ )
+	{
+		var e = game.entityList[i];
+		cursjs.write( mainSurface, 0, e.x, e.y, e.face );
 	}
 };
 
