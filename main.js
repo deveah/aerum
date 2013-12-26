@@ -1,11 +1,21 @@
 "use strict";
 
+/*	TODO:
+	* should only cache used tiles, such as pale aqua '~'s etc.,
+		and not the whole charset
+	* save whole charset only for text used in messages etc.
+*/
+
 var mainSurface;
 
 var colorscheme =
 [
 	{ fg: "#ffffff", bg: "#000000" },	/* white */
-	{ fg: "#666666", bg: "#000000" }	/* gray */
+	{ fg: "#666666", bg: "#000000" },	/* gray */
+	{ fg: "#3b444b", bg: "#000000" },	/* reversed arsenic */
+	{ fg: "#8DB600", bg: "#000000" },	/* apple green */
+	{ fg: "#BCD4E6", bg: "#000000" },	/* pale aqua */
+	{ fg: "#007BA7", bg: "#000000" }	/* cerulean */
 ];
 
 var game = game || {};

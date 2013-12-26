@@ -2,25 +2,31 @@
 
 var tiletype =
 {
-	void:	0,
-	floor:	1,
-	wall:	2,
-	door:	3,
-	pillar:	4
+	void:		0,
+	floor:		1,
+	wall:		2,
+	openDoor:	3,
+	closedDoor:	4,
+	pillar:		5,
+	grass:		6,
+	water:		7
 };
 
-Map = function( width, height )
+var Map = function( width, height )
 {
 	this.width = width;
 	this.height = height;
 
 	this.tile = new Array( width );
+	this.light = new Array( width );
 	for( var i = 0; i < width; i++ )
 	{
 		this.tile[i] = new Array( height );
+		this.light[i] = new Array( height );
 		for( var j = 0; j < height; j++ )
 		{
 			this.tile[i][j] = tiletype.void;
+			this.light[i][j] = true;
 		}
 	}
 };
@@ -62,7 +68,10 @@ Map.prototype.isPassable = function( x, y )
 {
 	return(
 		this.isLegal( x, y ) &&
-		( this.tile[x][y] == tiletype.floor ) );
+		(	( this.tile[x][y] == tiletype.floor ) ||
+			( this.tile[x][y] == tiletype.openDoor ) ||
+			( this.tile[x][y] == tiletype.grass ) ||
+			( this.tile[x][y] == tiletype.water ) ) );
 };
 
 Map.prototype.makeRoom = function( x, y, w, h )
@@ -167,7 +176,7 @@ Map.prototype.placeDoors = function( x, y, w, h )
 				{
 					if( this.tile[i][j] == tiletype.floor )
 					{
-						this.tile[i][j] = tiletype.door;
+						this.tile[i][j] = tiletype.closedDoor;
 					}
 				}
 			}
@@ -271,6 +280,66 @@ Map.prototype.postProcess = function()
 				( this.countNeighbours( i, j, tiletype.floor ) > 0 ) )
 			{
 				this.tile[i][j] = tiletype.wall;
+			}
+		}
+	}
+
+	/* 5% chance of spawning grass */
+	for( var i = 0; i < this.width; i++ )
+	{
+		for( var j = 0; j < this.height; j++ )
+		{
+			if( ( this.tile[i][j] == tiletype.floor ) &&
+				( rand( 1, 100 ) < 5 ) )
+			{
+				this.tile[i][j] = tiletype.grass;
+			}
+		}
+	}
+
+	/* 10x 10% chance of extending grass patches */
+	for( var k = 0; k < 10; k++ )
+	{
+		for( var i = 0; i < this.width; i++ )
+		{
+			for( var j = 0; j < this.height; j++ )
+			{
+				if( ( this.tile[i][j] == tiletype.floor ) &&
+					( this.countNeighbours( i, j, tiletype.grass ) > 0 ) &&
+					( rand( 1, 100 ) < 10 ) )
+				{
+					this.tile[i][j] = tiletype.grass;
+				}
+			}
+		}
+	}
+	
+	/* 5% chance of spawning water */
+	for( var i = 0; i < this.width; i++ )
+	{
+		for( var j = 0; j < this.height; j++ )
+		{
+			if( ( this.tile[i][j] == tiletype.floor ) &&
+				( rand( 1, 100 ) < 5 ) )
+			{
+				this.tile[i][j] = tiletype.water;
+			}
+		}
+	}
+
+	/* 10x 10% chance of extending water patches */
+	for( var k = 0; k < 10; k++ )
+	{
+		for( var i = 0; i < this.width; i++ )
+		{
+			for( var j = 0; j < this.height; j++ )
+			{
+				if( ( this.tile[i][j] == tiletype.floor ) &&
+					( this.countNeighbours( i, j, tiletype.water ) > 0 ) &&
+					( rand( 1, 100 ) < 10 ) )
+				{
+					this.tile[i][j] = tiletype.water;
+				}
 			}
 		}
 	}

@@ -2,6 +2,59 @@
 
 var ui = ui || {};
 
+ui.getTileFace = function( t )
+{
+	switch( t )
+	{
+	case tiletype.void:
+		return " ";
+	case tiletype.floor:
+		return ".";
+	case tiletype.wall:
+		return "#";
+	case tiletype.closedDoor:
+		return "+";
+	case tiletype.openDoor:
+		return "/";
+	case tiletype.pillar:
+		return "#";
+	case tiletype.grass:
+		return ";";
+	case tiletype.water:
+		return "~";
+	default:
+		return "?";
+	}
+};
+
+ui.getTileColor = function( t )
+{
+	switch( t )
+	{
+	case tiletype.void:
+		return 0;
+	case tiletype.floor:
+		return 2;
+	case tiletype.wall:
+		return 2;
+	case tiletype.closedDoor:
+		return 2;
+	case tiletype.openDoor:
+		return 2;
+	case tiletype.pillar:
+		return 2;
+	case tiletype.grass:
+		return 3;
+	case tiletype.water:
+		if( rand( 1, 100 ) < 50 )
+			return 4;
+		else
+			return 5;
+	default:
+		return 0;
+	}
+};
+
 ui.drawMainScreen = function()
 {
 	var m = game.player.map;
@@ -10,20 +63,15 @@ ui.drawMainScreen = function()
 	{
 		for( var j = 0; j < m.height; j++ )
 		{
-			var c = " ";
+			var t = m.tile[i][j];
+			var c = 0;
 
-			if( m.tile[i][j] == tiletype.void )
-				c = " ";
-			if( m.tile[i][j] == tiletype.floor )
-				c = ".";
-			if( m.tile[i][j] == tiletype.wall )
-				c = "#";
-			if( m.tile[i][j] == tiletype.door )
-				c = "+";
-			if( m.tile[i][j] == tiletype.pillar )
-				c = "%";
+			if( m.light[i][j] )
+				c = ui.getTileColor( t );
+			else
+				c = 1;
 
-			cursjs.write( mainSurface, 1, i, j, c );
+			cursjs.write( mainSurface, c, i, j, ui.getTileFace( t ) );
 		}
 	}
 

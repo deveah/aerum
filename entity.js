@@ -31,5 +31,10 @@ Entity.prototype.move = function( d )
 		this.x += d.x;
 		this.y += d.y;
 	}
+	else if( this.map.isLegal( this.x+d.x, this.y+d.y ) &&
+		( this.map.tile[this.x+d.x][this.y+d.y] == tiletype.closedDoor ) )
+	{
+		this.map.tile[this.x+d.x][this.y+d.y] = tiletype.openDoor;
+	}
 };
 
