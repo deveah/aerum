@@ -50,6 +50,10 @@ ui.initTiles = function()
 
 	tileset.entity.player = cursjs.makeGlyph( "@", mainSurface.font, "#ffffff",
 		"#000000", mainSurface.charWidth, mainSurface.charHeight, -5 );
+	tileset.entity.mutantFly = cursjs.makeGlyph( "f", mainSurface.font, "#49796b",
+		"#000000", mainSurface.charWidth, mainSurface.charHeight, -5 );
+	tileset.entity.sludgeWorm = cursjs.makeGlyph( "w", mainSurface.font, "#df73ff",
+		"#030f12", mainSurface.charWidth, mainSurface.charHeight, -5 );
 };
 
 ui.getTileImage = function( t, l )
@@ -128,7 +132,9 @@ ui.drawMainScreen = function()
 	for( var i = 0; i < game.entityList.length; i++ )
 	{
 		var e = game.entityList[i];
-		cursjs.putchar( mainSurface, e.x, e.y, tileset.entity.player );
+
+		if( game.player.map.light[e.x][e.y] )
+			cursjs.putchar( mainSurface, e.x, e.y, e.face );
 	}
 
 	cursjs.refresh( mainSurface );

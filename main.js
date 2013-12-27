@@ -34,11 +34,38 @@ function init()
 	game.entityList.push( game.player );
 
 	game.player.map = m;
+	game.player.face = tileset.entity.player;
 
 	while( !game.player.map.isPassable( game.player.x, game.player.y ) )
 	{
 		game.player.x = rand( 1, game.player.map.width-1 );
 		game.player.y = rand( 1, game.player.map.height-1 );
+	}
+
+	for( var i = 0; i < 10; i++ )
+	{
+		var e;
+		
+		if( rand( 1, 100 ) < 50 )
+		{
+			e = new Entity( "Mutant Fly" );
+			e.face = tileset.entity.mutantFly;
+		}
+		else
+		{
+			e = new Entity( "Sludge Worm" );
+			e.face = tileset.entity.sludgeWorm;
+		}
+
+		e.map = m;
+
+		while( !e.map.isPassable( e.x, e.y ) )
+		{
+			e.x = rand( 1, e.map.width-1 );
+			e.y = rand( 1, e.map.height-1 );
+		}
+
+		game.entityList.push( e );
 	}
 
 	ui.drawMainScreen();
