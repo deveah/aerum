@@ -1,21 +1,13 @@
 "use strict";
 
-/*	TODO:
-	* should only cache used tiles, such as pale aqua '~'s etc.,
-		and not the whole charset
-	* save whole charset only for text used in messages etc.
-*/
+/* TODO: some artifacts appear on the player's trail */
 
 var mainSurface;
 
 var colorscheme =
 [
 	{ fg: "#ffffff", bg: "#000000" },	/* white */
-	{ fg: "#666666", bg: "#000000" },	/* gray */
-	{ fg: "#3b444b", bg: "#000000" },	/* reversed arsenic */
-	{ fg: "#8DB600", bg: "#000000" },	/* apple green */
-	{ fg: "#BCD4E6", bg: "#000000" },	/* pale aqua */
-	{ fg: "#007BA7", bg: "#000000" }	/* cerulean */
+	{ fg: "#666666", bg: "#000000" }	/* gray */
 ];
 
 var game = game || {};
@@ -27,6 +19,8 @@ function init()
 	cursjs.surfaceSize( mainSurface, 80, 30 );
 	cursjs.populateCache( mainSurface, colorscheme,
 		-Math.floor( mainSurface.charHeight/5 ) );
+
+	ui.initTiles();
 
 	var m = new Map( 80, 25 );
 	m.generate( 10000 );
@@ -65,9 +59,5 @@ function getInput( e )
 		game.player.move( { x:  0, y: -1 } ); 
 	
 	ui.drawMainScreen();
-	cursjs.write( mainSurface, 1, 0, 0, "press: " + keycode );
-
-	cursjs.refresh( mainSurface );
-
 }
 

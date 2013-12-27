@@ -31,6 +31,17 @@ var Map = function( width, height )
 	}
 };
 
+Map.prototype.clearLight = function()
+{
+	for( var i = 0; i < this.width; i++ )
+	{
+		for( var j = 0; j < this.height; j++ )
+		{
+			this.light[i][j] = false;
+		}
+	}
+};
+
 Map.prototype.isLegal = function( x, y )
 {
 	return(

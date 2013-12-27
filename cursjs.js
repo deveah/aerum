@@ -103,11 +103,6 @@ cursjs.populateCache = function( surface, colorscheme, deltaY )
 	}
 };
 
-cursjs.init = function( canvasId, fontName, fontSize, cols, rows, colorscheme )
-{
-	return surface;
-};
-
 cursjs.refresh = function( surface )
 {
 	for( var i = 0; i < surface.cols; i++ )
@@ -151,12 +146,23 @@ cursjs.write = function( surface, charsetId, x, y, text )
 
 	for( var i = 0; i < length; i++ )
 	{
-		if( cursjs.isVisible( surface, i+x, y ) )
+		var c = text.charAt( i ) - 32;
+		if( cursjs.isVisible( surface, i+x, y ) ) /*&&
+			( surface.data[i+x][y].glyph != surface.charset[charsetId][c] ) )*/
 		{
-			surface.data[i+x][y].glyph = surface.charset[charsetId]
-				[ text.charCodeAt( i ) - 32 ];
+			surface.data[i+x][y].glyph = surface.charset[charsetId][c];
 			surface.data[i+x][y].updated = false;
 		}
+	}
+};
+
+cursjs.putchar = function( surface, x, y, image )
+{
+	if( cursjs.isVisible( surface, x, y ) ) /*&&
+		( surface.data[x][y].glyph != image ) )*/
+	{
+		surface.data[x][y].glyph = image;
+		surface.data[x][y].updated = false;
 	}
 };
 
