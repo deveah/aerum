@@ -12,6 +12,8 @@ var colorscheme =
 
 var game = game || {};
 
+var expect = [];
+
 function init()
 {
 	mainSurface = cursjs.initCanvas( "mainCanvas" );
@@ -76,14 +78,67 @@ function getInput( e )
 	/* too lazy to support IE */
 	var keycode = e.which;
 
-	if( keycode == 76 )
-		game.player.move( { x:  1, y:  0 } ); 
-	if( keycode == 72 )
-		game.player.move( { x: -1, y:  0 } ); 
-	if( keycode == 74 )
-		game.player.move( { x:  0, y:  1 } ); 
-	if( keycode == 75 )
-		game.player.move( { x:  0, y: -1 } ); 
+	/*	TODO: asynchronous input scheme - how to request for a response?
+		ex. fire in which direction? */
+
+	var res = 0; /* response to an awaited keystroke */
+
+	if( expect.length > 0 )
+	{
+		for( var i = 0; i < expect.length; i++ )
+		{
+			if( expect[i] == keycode )
+			{
+				expect = [];
+				res = keycode;
+				break;
+			}
+		}
+		/* ignore any other input */
+		if( res == 0 )
+			return;
+	}
+
+	for( var i = 0; i < game.entityList.length; i++ )
+	{
+		var e = game.entityList[i];
+
+		if( e == game.player )
+		{
+			switch( keycode )
+			{
+			case 76:
+				e.move( { x:  1, y:  0 } );
+				break;
+			case 72:
+				e.move( { x: -1, y:  0 } ); 
+				break;
+			case 74:
+				e.move( { x:  0, y:  1 } );
+				break;
+			case 75:
+				e.move( { x:  0, y: -1 } );
+				break;
+			case 70: /* f - fire */
+				expect = [ 76, 72, 74, 75 ]; /* expect hjkl - fire direction */
+				if( res != 0 )
+				{
+					console.log( "firing at " + res );
+					res = 0;
+				}
+				break;
+			default:
+				console.log( "unknown keypress: " + keycode.toString() );
+			}
+		}
+		else
+		{
+			if( e.active )
+			{
+				/* TODO ai */
+			}
+		}
+	}
 	
 	ui.drawMainScreen();
 }

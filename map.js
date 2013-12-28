@@ -9,7 +9,8 @@ var tiletype =
 	closedDoor:	4,
 	pillar:		5,
 	grass:		6,
-	water:		7
+	smallGrass:	7,
+	water:		8
 };
 
 var Map = function( width, height )
@@ -82,6 +83,7 @@ Map.prototype.isPassable = function( x, y )
 		(	( this.tile[x][y] == tiletype.floor ) ||
 			( this.tile[x][y] == tiletype.openDoor ) ||
 			( this.tile[x][y] == tiletype.grass ) ||
+			( this.tile[x][y] == tiletype.smallGrass ) ||
 			( this.tile[x][y] == tiletype.water ) ) );
 };
 
@@ -325,13 +327,30 @@ Map.prototype.postProcess = function()
 		}
 	}
 	
-	/* 5% chance of spawning water */
+	/* 2x 10% chance of spawning small grass near grass patches */
+	for( var k = 0; k < 2; k++ )
+	{
+		for( var i = 0; i < this.width; i++ )
+		{
+			for( var j = 0; j < this.height; j++ )
+			{
+				if( ( this.tile[i][j] == tiletype.floor ) &&
+					( this.countNeighbours( i, j, tiletype.grass ) > 0 ) &&
+					( rand( 1, 100 ) < 10 ) )
+				{
+					this.tile[i][j] = tiletype.smallGrass;
+				}
+			}
+		}
+	}
+
+	/* 7% chance of spawning water */
 	for( var i = 0; i < this.width; i++ )
 	{
 		for( var j = 0; j < this.height; j++ )
 		{
 			if( ( this.tile[i][j] == tiletype.floor ) &&
-				( rand( 1, 100 ) < 5 ) )
+				( rand( 1, 100 ) < 7 ) )
 			{
 				this.tile[i][j] = tiletype.water;
 			}

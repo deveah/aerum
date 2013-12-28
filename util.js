@@ -16,7 +16,7 @@ function entityAt( m, x, y )
 	{
 		var e = game.entityList[i];
 
-		if( ( e.map == m ) && ( e.x == x ) && ( e.y == y ) )
+		if( e.active && ( e.map == m ) && ( e.x == x ) && ( e.y == y ) )
 		{
 			return e;
 		}

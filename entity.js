@@ -8,11 +8,13 @@ var Entity = function( name )
 	this.agility = 0;
 	this.ap = 0;
 
-	this.hp = 0;
+	this.hp = 1;
 
 	this.x = 0;
 	this.y = 0;
 	this.map = {};
+
+	this.active = true;
 };
 
 Entity.prototype.act = function()
@@ -39,7 +41,12 @@ Entity.prototype.move = function( d )
 		}
 		else
 		{
-			/* TODO melee combat */
+			e.hp -= 1;
+			
+			if( e.hp <= 0 )
+			{
+				e.die();
+			}
 		}
 	}
 	else if( this.map.isLegal( this.x+d.x, this.y+d.y ) &&
@@ -47,5 +54,10 @@ Entity.prototype.move = function( d )
 	{
 		this.map.tile[this.x+d.x][this.y+d.y] = tiletype.openDoor;
 	}
+};
+
+Entity.prototype.die = function()
+{
+	this.active = false;
 };
 

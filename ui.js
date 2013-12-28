@@ -10,7 +10,7 @@ ui.initTiles = function()
 
 	tileset.lit = {};
 
-	tileset.lit.wall = cursjs.makeGlyph( "#", mainSurface.font, "#a29260",
+	tileset.lit.wall = cursjs.makeGlyph( "#", mainSurface.font, "#665d1e",
 		"#000000", mainSurface.charWidth, mainSurface.charHeight, -5 );
 	tileset.lit.floor = cursjs.makeGlyph( ".", mainSurface.font, "#867e36",
 		"#000000", mainSurface.charWidth, mainSurface.charHeight, -5 );
@@ -20,8 +20,10 @@ ui.initTiles = function()
 		"#000000", mainSurface.charWidth, mainSurface.charHeight, -5 );
 	tileset.lit.pillar = cursjs.makeGlyph( "#", mainSurface.font, "#fada5e",
 		"#000000", mainSurface.charWidth, mainSurface.charHeight, -5 );
-	tileset.lit.grass = cursjs.makeGlyph( ";", mainSurface.font, "#8db600",
-		"#001000", mainSurface.charWidth, mainSurface.charHeight, -5 );
+	tileset.lit.grass = cursjs.makeGlyph( ";", mainSurface.font, "#4b5320",
+		"#000800", mainSurface.charWidth, mainSurface.charHeight, -5 );
+	tileset.lit.smallGrass = cursjs.makeGlyph( ",", mainSurface.font, "#4b6320",
+		"#000a00", mainSurface.charWidth, mainSurface.charHeight, -5 );
 	tileset.lit.waterA = cursjs.makeGlyph( "~", mainSurface.font, "#007ba7",
 		"#000017", mainSurface.charWidth, mainSurface.charHeight, -5 );
 	tileset.lit.waterB = cursjs.makeGlyph( "~", mainSurface.font, "#436b95",
@@ -42,6 +44,8 @@ ui.initTiles = function()
 	tileset.dark.pillar = cursjs.makeGlyph( "#", mainSurface.font, darkColor,
 		"#000000", mainSurface.charWidth, mainSurface.charHeight, -5 );
 	tileset.dark.grass = cursjs.makeGlyph( ";", mainSurface.font, darkColor,
+		"#000000", mainSurface.charWidth, mainSurface.charHeight, -5 );
+	tileset.dark.smallGrass = cursjs.makeGlyph( ",", mainSurface.font, darkColor,
 		"#000000", mainSurface.charWidth, mainSurface.charHeight, -5 );
 	tileset.dark.water = cursjs.makeGlyph( "~", mainSurface.font, darkColor,
 		"#000000", mainSurface.charWidth, mainSurface.charHeight, -5 );
@@ -76,6 +80,8 @@ ui.getTileImage = function( t, l )
 			return tileset.lit.pillar;
 		case tiletype.grass:
 			return tileset.lit.grass;
+		case tiletype.smallGrass:
+			return tileset.lit.smallGrass;
 		case tiletype.water:
 			if( rand( 1, 100 ) < 50 )
 				return tileset.lit.waterA;
@@ -103,6 +109,8 @@ ui.getTileImage = function( t, l )
 			return tileset.dark.pillar;
 		case tiletype.grass:
 			return tileset.dark.grass;
+		case tiletype.smallGrass:
+			return tileset.dark.smallGrass;
 		case tiletype.water:
 			return tileset.dark.water;
 		default:
@@ -133,7 +141,7 @@ ui.drawMainScreen = function()
 	{
 		var e = game.entityList[i];
 
-		if( game.player.map.light[e.x][e.y] )
+		if( game.player.map.light[e.x][e.y] && e.active )
 			cursjs.putchar( mainSurface, e.x, e.y, e.face );
 	}
 
